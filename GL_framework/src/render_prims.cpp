@@ -4,8 +4,8 @@
 #include <cstdio>
 
 //Boolean variables allow to show/hide the primitives
-bool renderSphere = true;
-bool renderCapsule = true;
+bool renderSphere = false;
+bool renderCapsule = false;
 bool renderParticles = true;
 
 namespace Sphere {
