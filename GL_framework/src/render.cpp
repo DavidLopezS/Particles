@@ -92,6 +92,7 @@ void GLinit(int width, int height) {
 	Box::setupCube();
 	Axis::setupAxis();
 	setupPrims();
+	
 }
 
 void GLcleanup() {
