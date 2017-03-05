@@ -5,6 +5,7 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <cstdio>
 #include <vector>
+#include <iostream>
 
 //Boolean variables allow to show/hide the primitives
 bool renderSphere = false;
@@ -83,7 +84,8 @@ struct Particle {
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon)
 };
 
-std::vector <Particle> partArray;
+//std::vector <Particle> partArray;
+Particle partArray[10000];
 
 void generateNewParticle(bool mode) {
 	//calcular la generacio de particules, es a dir, la posicio x,y,z de la particula
@@ -104,21 +106,27 @@ void PhysicsInit() {
 	//TODO
 	//inizialitzar particules en el vector partArray;
 
-	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		partVerts[i * 3 + 0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-		partVerts[i * 3 + 1] = ((float)rand() / RAND_MAX) * 10.f;
-		partVerts[i * 3 + 2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+	for (int i = 0; i < 10000; ++i) {
+		partArray[i].pos[0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+		partArray[i].pos[1] = ((float)rand() / RAND_MAX) * 10.f;
+		partArray[i].pos[2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+
+		std::cout << "Array posX: " << partArray[i].pos[0] << std::endl;
+		std::cout << "Array posY: " << partArray[i].pos[1] << std::endl;
+		std::cout << "Array posZ: " << partArray[i].pos[2] << std::endl;
 	}
-	
+	//partVerts[i * 3 + 0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+	//partVerts[i * 3 + 1] = ((float)rand() / RAND_MAX) * 10.f;
+	//partVerts[i * 3 + 2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;	
 	
 }
 
 void PhysicsUpdate(float dt){//, std::vector<Particle> particlesArr) {  //si canviem els parametres, ha de canviar la definicio
 	//TODO
 
-	float *partVerts = new float[LilSpheres::maxParticles * 3];
+	/*float *partVerts = new float[LilSpheres::maxParticles * 3];
 	LilSpheres::updateParticles(0, LilSpheres::maxParticles, partVerts);
-	delete[] partVerts;
+	delete[] partVerts;*/
 }
 void PhysicsCleanup() {
 	//TODO
