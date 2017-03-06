@@ -81,11 +81,11 @@ void renderPrims() {
 struct Particle {
 	float pos[3];
 	float speed[3];
-	float lifeEx; // inizialitzar a un valor (ex. 1 segon)
+	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
 };
 
 //std::vector <Particle> partArray;
-Particle partArray[10000];
+//Particle partArray[10000];
 
 void generateNewParticle(bool mode) {
 	//calcular la generacio de particules, es a dir, la posicio x,y,z de la particula
@@ -105,6 +105,8 @@ void generateNewParticle(bool mode) {
 void PhysicsInit() {
 	//TODO
 	//inizialitzar particules en el vector partArray;
+
+	Particle *partArray = new Particle[LilSpheres::maxParticles];
 
 	for (int i = 0; i < 10000; ++i) {
 		partArray[i].pos[0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
