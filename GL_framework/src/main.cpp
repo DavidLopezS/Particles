@@ -43,6 +43,7 @@ namespace {
 	}
 }
 
+
 //int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 int main(int argc, char** argv){
 	//Init GLFW
@@ -74,6 +75,7 @@ int main(int argc, char** argv){
 	glfwGetFramebufferSize(window, &display_w, &display_h);
 	//Init scene
 	GLinit(display_w, display_h);
+
 	PhysicsInit();
 	// Setup ImGui binding
 	ImGui_ImplGlfwGL3_Init(window, true);

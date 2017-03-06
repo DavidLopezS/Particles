@@ -84,7 +84,7 @@ struct Particle {
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
 };
 
-//std::vector <Particle> partArray;
+std::vector <Particle> partArray;
 //Particle partArray[10000];
 
 void generateNewParticle(bool mode) {
@@ -102,21 +102,29 @@ void generateNewParticle(bool mode) {
 
 }
 
-void PhysicsInit() {
+
+void PhysicsInit(/*std::vector <Particle> particlesArr*/) {
 	//TODO
 	//inizialitzar particules en el vector partArray;
 
 	Particle *partArray = new Particle[LilSpheres::maxParticles];
-
-	for (int i = 0; i < 10000; ++i) {
+	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
 		partArray[i].pos[0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 		partArray[i].pos[1] = ((float)rand() / RAND_MAX) * 10.f;
 		partArray[i].pos[2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 
-		std::cout << "Array posX: " << partArray[i].pos[0] << std::endl;
-		std::cout << "Array posY: " << partArray[i].pos[1] << std::endl;
-		std::cout << "Array posZ: " << partArray[i].pos[2] << std::endl;
+		
 	}
+
+	float *aaa = new float[LilSpheres::maxParticles * 3];
+	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
+		aaa[i * 3 + 0] = partArray[i].pos[0];
+		aaa[i * 3 + 1] = partArray[i].pos[1];
+		aaa[i * 3 + 2] = partArray[i].pos[2];
+	}
+	LilSpheres::updateParticles(0, LilSpheres::maxParticles, aaa);
+
+
 	//partVerts[i * 3 + 0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 	//partVerts[i * 3 + 1] = ((float)rand() / RAND_MAX) * 10.f;
 	//partVerts[i * 3 + 2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;	
