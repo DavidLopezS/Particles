@@ -80,12 +80,14 @@ void renderPrims() {
 
 struct Particle {
 	glm::vec3 pos;
-	glm::vec3 speed[3];
+	glm::vec3 speed;
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
 };
 
+float gravity = 9.8f;
+
 Particle *partArray;
-float *arrayDef;
+float *vertexArray;
 
 void generateNewParticle(bool mode) {
 	//calcular la generacio de particules, es a dir, la posicio x,y,z de la particula
@@ -102,39 +104,63 @@ void generateNewParticle(bool mode) {
 
 }
 
+void updateParticleArray() {
+	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
+		vertexArray[i * 3 + 0] = partArray[i].pos[0];
+		vertexArray[i * 3 + 1] = partArray[i].pos[1];
+		vertexArray[i * 3 + 2] = partArray[i].pos[2];
+	}
+	LilSpheres::updateParticles(0, LilSpheres::maxParticles, vertexArray);
+}
 
-void PhysicsInit() {
-	//TODO
+void moveParticle(int index) {
+//TO DO
+	//actualitzar velocitat
+	//partArray[index]...................
+	//actualitzar posicio
+}
+
+void checkWallCollision(int index) {
+	//TO DO
+	//if collides, update new position and velocity
+}
+
+void PhysicsInit() {	
 	//inizialitzar particules en el vector partArray;
 
 	partArray = new Particle[LilSpheres::maxParticles];
+	vertexArray = new float[LilSpheres::maxParticles*3];
+
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
 		partArray[i].pos.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 		partArray[i].pos.y = ((float)rand() / RAND_MAX) * 10.f;
 		partArray[i].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-
-		
 	}
-
-	float *arrayDef = new float[LilSpheres::maxParticles * 3];
-	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		arrayDef[i * 3 + 0] = partArray[i].pos[0];
-		arrayDef[i * 3 + 1] = partArray[i].pos[1];
-		arrayDef[i * 3 + 2] = partArray[i].pos[2];
-	}
-	LilSpheres::updateParticles(0, LilSpheres::maxParticles, arrayDef);
-	
 }
 
-void PhysicsUpdate(float dt){//, std::vector<Particle> particlesArr) {  //si canviem els parametres, ha de canviar la definicio
-	//TODO
 
-	/*float *partVerts = new float[LilSpheres::maxParticles * 3];
-	LilSpheres::updateParticles(0, LilSpheres::maxParticles, partVerts);
-	delete[] partVerts;*/
+void PhysicsUpdate(float dt){
+	
+	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
+		//mirar si moren
+		//generar noves particules
+
+		moveParticle(i);
+		checkWallCollision(i); //recalcular nova posicio
+		//colisio amb esfera i capsula
+
+
+	}
+	
+	
+
+
+	updateParticleArray(); //al final de tot
 }
 void PhysicsCleanup() {
-	//TODO
+	
+	delete[] partArray;
+	delete[]vertexArray;
 	
 }
 
