@@ -79,13 +79,13 @@ void renderPrims() {
 
 
 struct Particle {
-	float pos[3];
-	float speed[3];
+	glm::vec3 pos;
+	glm::vec3 speed[3];
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
 };
 
-std::vector <Particle> partArray;
-//Particle partArray[10000];
+Particle *partArray;
+float *arrayDef;
 
 void generateNewParticle(bool mode) {
 	//calcular la generacio de particules, es a dir, la posicio x,y,z de la particula
@@ -103,31 +103,26 @@ void generateNewParticle(bool mode) {
 }
 
 
-void PhysicsInit(/*std::vector <Particle> particlesArr*/) {
+void PhysicsInit() {
 	//TODO
 	//inizialitzar particules en el vector partArray;
 
-	Particle *partArray = new Particle[LilSpheres::maxParticles];
+	partArray = new Particle[LilSpheres::maxParticles];
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		partArray[i].pos[0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-		partArray[i].pos[1] = ((float)rand() / RAND_MAX) * 10.f;
-		partArray[i].pos[2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+		partArray[i].pos.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+		partArray[i].pos.y = ((float)rand() / RAND_MAX) * 10.f;
+		partArray[i].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 
 		
 	}
 
-	float *aaa = new float[LilSpheres::maxParticles * 3];
+	float *arrayDef = new float[LilSpheres::maxParticles * 3];
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		aaa[i * 3 + 0] = partArray[i].pos[0];
-		aaa[i * 3 + 1] = partArray[i].pos[1];
-		aaa[i * 3 + 2] = partArray[i].pos[2];
+		arrayDef[i * 3 + 0] = partArray[i].pos[0];
+		arrayDef[i * 3 + 1] = partArray[i].pos[1];
+		arrayDef[i * 3 + 2] = partArray[i].pos[2];
 	}
-	LilSpheres::updateParticles(0, LilSpheres::maxParticles, aaa);
-
-
-	//partVerts[i * 3 + 0] = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-	//partVerts[i * 3 + 1] = ((float)rand() / RAND_MAX) * 10.f;
-	//partVerts[i * 3 + 2] = ((float)rand() / RAND_MAX) * 10.f - 5.f;	
+	LilSpheres::updateParticles(0, LilSpheres::maxParticles, arrayDef);
 	
 }
 
