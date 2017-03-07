@@ -116,8 +116,15 @@ void updateParticleArray() {
 void moveParticle(int index) {
 //TO DO
 	//actualitzar velocitat
-	//partArray[index]...................
+	partArray[index].speed.x = ((float)rand() / RAND_MAX) * 0.5f - 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
+	partArray[index].speed.y = ((float)rand() / RAND_MAX) * 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
+	partArray[index].speed.z = ((float)rand() / RAND_MAX) * 0.5f - 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
 	//actualitzar posicio
+	if (partArray[index].speed.x != 0 && partArray[index].speed.y != 0 && partArray[index].speed.z != 0) {
+		partArray[index].pos.x += partArray[index].speed.x;
+		partArray[index].pos.y += partArray[index].speed.y;
+		partArray[index].pos.z += partArray[index].speed.z;
+	}
 }
 
 void checkWallCollision(int index) {
@@ -146,7 +153,7 @@ void PhysicsUpdate(float dt){
 		//generar noves particules
 
 		moveParticle(i);
-		checkWallCollision(i); //recalcular nova posicio
+		//checkWallCollision(i); //recalcular nova posicio
 		//colisio amb esfera i capsula
 
 
