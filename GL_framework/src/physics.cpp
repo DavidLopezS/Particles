@@ -113,18 +113,18 @@ void updateParticleArray() {
 	LilSpheres::updateParticles(0, LilSpheres::maxParticles, vertexArray);
 }
 
-void moveParticle(int index) {
+void moveParticle(int index, float time) {
 //TO DO
 	//actualitzar velocitat
-	partArray[index].speed.x = ((float)rand() / RAND_MAX) * 0.5f - 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
-	partArray[index].speed.y = ((float)rand() / RAND_MAX) * 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
-	partArray[index].speed.z = ((float)rand() / RAND_MAX) * 0.5f - 0.5f;//((float)rand() / RAND_MAX) * 0.5f;
+	partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
+	partArray[index].speed.y = partArray[index].speed.y -gravity*time; //te gravetat
+	partArray[index].speed.z = partArray[index].speed.z; //la mateixa, no hi ha fregament
+
 	//actualitzar posicio
-	if (partArray[index].speed.x != 0 && partArray[index].speed.y != 0 && partArray[index].speed.z != 0) {
-		partArray[index].pos.x += partArray[index].speed.x;
-		partArray[index].pos.y += partArray[index].speed.y;
-		partArray[index].pos.z += partArray[index].speed.z;
-	}
+	partArray[index].pos.x += partArray[index].speed.x * time;
+	partArray[index].pos.y += partArray[index].speed.y * time;
+	partArray[index].pos.z += partArray[index].speed.z * time;
+	
 }
 
 void checkWallCollision(int index) {
@@ -137,11 +137,17 @@ void PhysicsInit() {
 
 	partArray = new Particle[LilSpheres::maxParticles];
 	vertexArray = new float[LilSpheres::maxParticles*3];
-
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
+		//pos
 		partArray[i].pos.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 		partArray[i].pos.y = ((float)rand() / RAND_MAX) * 10.f;
 		partArray[i].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+
+		//vel inicial
+		partArray[i].speed.x = ((float)rand() / RAND_MAX) * 10 - 5;
+		partArray[i].speed.y = ((float)rand() / RAND_MAX) * 10 - 5;
+		partArray[i].speed.z = ((float)rand() / RAND_MAX) * 10 - 5;
+
 	}
 }
 
@@ -152,7 +158,7 @@ void PhysicsUpdate(float dt){
 		//mirar si moren
 		//generar noves particules
 
-		moveParticle(i);
+		moveParticle(i, dt);
 		//checkWallCollision(i); //recalcular nova posicio
 		//colisio amb esfera i capsula
 
