@@ -84,7 +84,12 @@ struct Particle {
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
 };
 
+int firstPartPos = 0, lastPartPos = 0;
+float particlesLifeTime = 3.0f;
+int particleGenerationRate = 5;
 float gravity = 9.8f;
+
+
 
 Particle *partArray;
 float *vertexArray;
@@ -115,6 +120,7 @@ void updateParticleArray() {
 
 void moveParticle(int index, float time) {
 //TO DO
+	//EULER SOLVER (elastic)
 	//actualitzar velocitat
 	partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
 	partArray[index].speed.y = partArray[index].speed.y -gravity*time; //te gravetat
@@ -180,7 +186,8 @@ void PhysicsCleanup() {
 void GUI() {
 	{	//FrameRate
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-
+		ImGui::DragFloat("Particles Life Time", &particlesLifeTime, 0.1f);
+		ImGui::DragInt("Particles Generation Rate", &particleGenerationRate, 1);
 		//TODO
 	}
 
