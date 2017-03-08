@@ -81,7 +81,11 @@ void renderPrims() {
 struct Particle {
 	glm::vec3 pos;
 	glm::vec3 speed;
+	glm::vec3 dir;
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
+	Particle() {
+		dir.x = dir.y = dir.z = 1;
+	}
 };
 
 float gravity = 9.8f;
@@ -113,23 +117,42 @@ void updateParticleArray() {
 	LilSpheres::updateParticles(0, LilSpheres::maxParticles, vertexArray);
 }
 
+
+
 void moveParticle(int index, float time) {
 //TO DO
 	//actualitzar velocitat
 	partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
-	partArray[index].speed.y = partArray[index].speed.y -gravity*time; //te gravetat
+	partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ -gravity*time ; //te gravetat
 	partArray[index].speed.z = partArray[index].speed.z; //la mateixa, no hi ha fregament
 
 	//actualitzar posicio
-	partArray[index].pos.x += partArray[index].speed.x * time;
-	partArray[index].pos.y += partArray[index].speed.y * time;
-	partArray[index].pos.z += partArray[index].speed.z * time;
-	
+	partArray[index].pos.x = partArray[index].pos.x + (partArray[index].speed.x * time) * partArray[index].dir.x;
+	partArray[index].pos.y = partArray[index].pos.y + partArray[index].speed.y * time ;
+	partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time * partArray[index].dir.z;
+
 }
 
-void checkWallCollision(int index) {
+void checkWallCollision(int index, float time) {
 	//TO DO
 	//if collides, update new position and velocity
+	if (partArray[index].pos.y <= 0.0f) {
+		/*partArray[index].pos.y -= partArray[index].speed.y * time;*///Suelo
+		partArray[index].dir.y = -1;
+	}
+	if (partArray[index].pos.x <= -5) {
+		partArray[index].pos.x -= partArray[index].speed.x * time;
+	}
+	else if (partArray[index].pos.x >= 5) {
+		partArray[index].pos.x -= partArray[index].speed.x * time;
+
+	}
+	if (partArray[index].pos.z <= -5) {
+		partArray[index].pos.z -= partArray[index].speed.z * time;
+	}
+	else if (partArray[index].pos.z >= 5) {
+		partArray[index].pos.z -= partArray[index].speed.z * time;
+	}
 }
 
 void PhysicsInit() {	
@@ -144,9 +167,9 @@ void PhysicsInit() {
 		partArray[i].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 
 		//vel inicial
-		partArray[i].speed.x = ((float)rand() / RAND_MAX) * 10 - 5;
-		partArray[i].speed.y = ((float)rand() / RAND_MAX) * 10 - 5;
-		partArray[i].speed.z = ((float)rand() / RAND_MAX) * 10 - 5;
+		partArray[i].speed.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+		partArray[i].speed.y = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+		partArray[i].speed.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 
 	}
 }
@@ -159,15 +182,9 @@ void PhysicsUpdate(float dt){
 		//generar noves particules
 
 		moveParticle(i, dt);
-		//checkWallCollision(i); //recalcular nova posicio
+		checkWallCollision(i, dt); //recalcular nova posicio
 		//colisio amb esfera i capsula
-
-
 	}
-	
-	
-
-
 	updateParticleArray(); //al final de tot
 }
 void PhysicsCleanup() {
