@@ -142,19 +142,19 @@ void moveParticle(int index, float time, bool mode) {
 	if (!mode) {//S'utilitza la variable global EuVer
 		
 		if (partArray[index].prePos.x == 0 && partArray[index].prePos.y == 0 && partArray[index].prePos.z == 0) {
-			partArray[index].prePos.x == partArray[index].pos.x;
-			partArray[index].prePos.y == partArray[index].pos.y;
-			partArray[index].prePos.z == partArray[index].pos.z;
+			partArray[index].prePos.x = partArray[index].pos.x;
+			partArray[index].prePos.y = partArray[index].pos.y;
+			partArray[index].prePos.z = partArray[index].pos.z;
 		}
 
 		//actualitzar la posició
-		partArray[index].pos.x = partArray[index].pos.x + (partArray[index].pos.x - partArray[index].prePos.x)+ * (time * time);
-		partArray[index].pos.y = partArray[index].pos.y + (partArray[index].pos.y - partArray[index].prePos.y)+ * (time * time);
-		partArray[index].pos.z = partArray[index].pos.z + (partArray[index].pos.z - partArray[index].prePos.z)+ * (time * time);
+		partArray[index].pos.x = partArray[index].pos.x + (partArray[index].pos.x - partArray[index].prePos.x)+0 * (time * time);
+		partArray[index].pos.y = partArray[index].pos.y + (partArray[index].pos.y - partArray[index].prePos.y)-gravity * (time * time);
+		partArray[index].pos.z = partArray[index].pos.z + (partArray[index].pos.z - partArray[index].prePos.z)+0 * (time * time);
 
-		partArray[index].prePos.x == partArray[index].pos.x;
-		partArray[index].prePos.y == partArray[index].pos.y;
-		partArray[index].prePos.z == partArray[index].pos.z;
+		partArray[index].prePos.x = partArray[index].pos.x;
+		partArray[index].prePos.y = partArray[index].pos.y;
+		partArray[index].prePos.z = partArray[index].pos.z;
 
 		//std::cout << "Prev pos: " << temp[0] << std::endl;
 		//std::cout << "Next pos: " << partArray[index].pos.x << std::endl;
