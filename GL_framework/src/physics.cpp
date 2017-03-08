@@ -80,6 +80,7 @@ void renderPrims() {
 
 struct Particle {
 	glm::vec3 pos;
+	glm::vec3 prePos;
 	glm::vec3 speed;
 	glm::vec3 dir;
 	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
@@ -92,7 +93,7 @@ int firstPartPos = 0, lastPartPos = 0;
 float particlesLifeTime = 3.0f;
 int particleGenerationRate = 5;
 float gravity = 9.8f;
-
+bool EuVer = true;
 
 
 Particle *partArray;
@@ -124,40 +125,64 @@ void updateParticleArray() {
 
 
 
-void moveParticle(int index, float time) {
+void moveParticle(int index, float time, bool mode) {
 //TO DO
 	//EULER SOLVER (elastic)
-	//actualitzar velocitat
-	partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
-	partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ -gravity*time ; //te gravetat
-	partArray[index].speed.z = partArray[index].speed.z; //la mateixa, no hi ha fregament
+	if (mode) {
+		//actualitzar velocitat
+		partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
+		partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ - gravity*time; //te gravetat
+		partArray[index].speed.z = partArray[index].speed.z; //la mateixa, no hi ha fregament
+		//actualitzar posicio
+		partArray[index].pos.x = partArray[index].pos.x + partArray[index].speed.x * time /** partArray[index].dir.x*/;
+		partArray[index].pos.y = partArray[index].pos.y + partArray[index].speed.y * time;
+		partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time /** partArray[index].dir.z*/;
+	}
+	//VERLET SOLVER
+	if (!mode) {
+		
+		if (partArray[index].prePos.x == NULL && partArray[index].prePos.y == NULL && partArray[index].prePos.z == NULL) {
+			partArray[index].prePos.x == partArray[index].pos.x;
+			partArray[index].prePos.y == partArray[index].pos.y;
+			partArray[index].prePos.z == partArray[index].pos.z;
+		}
 
-	//actualitzar posicio
-	partArray[index].pos.x = partArray[index].pos.x + (partArray[index].speed.x * time) * partArray[index].dir.x;
-	partArray[index].pos.y = partArray[index].pos.y + partArray[index].speed.y * time ;
-	partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time * partArray[index].dir.z;
+		//actualitzar la posició
+		partArray[index].pos.x = partArray[index].pos.x + (partArray[index].pos.x - partArray[index].prePos.x)+0 * (time * time);
+		partArray[index].pos.y = partArray[index].pos.y + (partArray[index].pos.y - partArray[index].prePos.y)-gravity * (time * time);
+		partArray[index].pos.z = partArray[index].pos.z + (partArray[index].pos.z - partArray[index].prePos.z)+0 * (time * time);
 
+		partArray[index].prePos.x == partArray[index].pos.x;
+		partArray[index].prePos.y == partArray[index].pos.y;
+		partArray[index].prePos.z == partArray[index].pos.z;
+
+		//std::cout << "Prev pos: " << temp[0] << std::endl;
+		//std::cout << "Next pos: " << partArray[index].pos.x << std::endl;
+	}
 }
 
 void checkWallCollision(int index, float time) {
 	//TO DO
 	//if collides, update new position and velocity
-	if (partArray[index].pos.y <= 0.0f) {
-		/*partArray[index].pos.y -= partArray[index].speed.y * time;*///Suelo
-		partArray[index].dir.y = -1;
+	if (partArray[index].pos.y <= 0.f) {//Suelo
+		//partArray[index].pos.y -= partArray[index].speed.y * time;
+		//partArray[index].pos.y = 
 	}
-	if (partArray[index].pos.x <= -5) {
-		partArray[index].pos.x -= partArray[index].speed.x * time;
+	else if (partArray[index].pos.y >= 10.f) {
+		//partArray[index].pos.y -= partArray[index].speed.y *time;
 	}
-	else if (partArray[index].pos.x >= 5) {
-		partArray[index].pos.x -= partArray[index].speed.x * time;
+	if (partArray[index].pos.x <= -5.f) {//Paret esquerra
+		//partArray[index].pos.x -= partArray[index].speed.x * time;
+	}
+	else if (partArray[index].pos.x >= 5.f) {//Paret dreta
+		//partArray[index].pos.x -= partArray[index].speed.x * time;
 
 	}
-	if (partArray[index].pos.z <= -5) {
-		partArray[index].pos.z -= partArray[index].speed.z * time;
+	if (partArray[index].pos.z <= -5.f) {//Paret fons
+		//partArray[index].pos.z -= partArray[index].speed.z * time;
 	}
-	else if (partArray[index].pos.z >= 5) {
-		partArray[index].pos.z -= partArray[index].speed.z * time;
+	else if (partArray[index].pos.z >= 5.f) {//Paret front
+		/*partArray[index].pos.z -= partArray[index].speed.z * time;*/
 	}
 }
 
@@ -187,7 +212,7 @@ void PhysicsUpdate(float dt){
 		//mirar si moren
 		//generar noves particules
 
-		moveParticle(i, dt);
+		moveParticle(i, dt, EuVer);
 		checkWallCollision(i, dt); //recalcular nova posicio
 		//colisio amb esfera i capsula
 	}
