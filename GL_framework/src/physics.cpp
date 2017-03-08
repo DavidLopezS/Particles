@@ -93,7 +93,7 @@ int firstPartPos = 0, lastPartPos = 0;
 float particlesLifeTime = 3.0f;
 int particleGenerationRate = 5;
 float gravity = 9.8f;
-bool EuVer = true;
+bool EuVer = false;//canvia de Euler a Verlet
 
 
 Particle *partArray;
@@ -128,7 +128,7 @@ void updateParticleArray() {
 void moveParticle(int index, float time, bool mode) {
 //TO DO
 	//EULER SOLVER (elastic)
-	if (mode) {
+	if (mode) {//S'utilitza la variable global EuVer
 		//actualitzar velocitat
 		partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
 		partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ - gravity*time; //te gravetat
@@ -139,18 +139,18 @@ void moveParticle(int index, float time, bool mode) {
 		partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time /** partArray[index].dir.z*/;
 	}
 	//VERLET SOLVER
-	if (!mode) {
+	if (!mode) {//S'utilitza la variable global EuVer
 		
-		if (partArray[index].prePos.x == NULL && partArray[index].prePos.y == NULL && partArray[index].prePos.z == NULL) {
+		if (partArray[index].prePos.x == 0 && partArray[index].prePos.y == 0 && partArray[index].prePos.z == 0) {
 			partArray[index].prePos.x == partArray[index].pos.x;
 			partArray[index].prePos.y == partArray[index].pos.y;
 			partArray[index].prePos.z == partArray[index].pos.z;
 		}
 
 		//actualitzar la posició
-		partArray[index].pos.x = partArray[index].pos.x + (partArray[index].pos.x - partArray[index].prePos.x)+0 * (time * time);
-		partArray[index].pos.y = partArray[index].pos.y + (partArray[index].pos.y - partArray[index].prePos.y)-gravity * (time * time);
-		partArray[index].pos.z = partArray[index].pos.z + (partArray[index].pos.z - partArray[index].prePos.z)+0 * (time * time);
+		partArray[index].pos.x = partArray[index].pos.x + (partArray[index].pos.x - partArray[index].prePos.x)+ * (time * time);
+		partArray[index].pos.y = partArray[index].pos.y + (partArray[index].pos.y - partArray[index].prePos.y)+ * (time * time);
+		partArray[index].pos.z = partArray[index].pos.z + (partArray[index].pos.z - partArray[index].prePos.z)+ * (time * time);
 
 		partArray[index].prePos.x == partArray[index].pos.x;
 		partArray[index].prePos.y == partArray[index].pos.y;
