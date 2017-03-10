@@ -93,7 +93,7 @@ int firstPartPos = 0, lastPartPos = 0;
 float particlesLifeTime = 3.0f;
 int particleGenerationRate = 5;
 float gravity = 9.8f;
-bool EuVer = false;//canvia de Euler a Verlet
+int EuVer = true; //canvia de Euler a Verlet--> false = Euler    true = Verlet.
 
 
 Particle *partArray;
@@ -128,7 +128,7 @@ void updateParticleArray() {
 void moveParticle(int index, float time, bool mode) {
 //TO DO
 	//EULER SOLVER (elastic)
-	if (mode) {//S'utilitza la variable global EuVer
+	if (!mode) {//S'utilitza la variable global EuVer
 		//actualitzar velocitat
 		partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
 		partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ - gravity*time; //te gravetat
@@ -139,7 +139,7 @@ void moveParticle(int index, float time, bool mode) {
 		partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time /** partArray[index].dir.z*/;
 	}
 	//VERLET SOLVER
-	if (!mode) {//S'utilitza la variable global EuVer
+	if (mode) {//S'utilitza la variable global EuVer
 		
 		if (partArray[index].prePos.x == 0 && partArray[index].prePos.y == 0 && partArray[index].prePos.z == 0) {
 			partArray[index].prePos.x = partArray[index].pos.x;
@@ -225,9 +225,12 @@ void PhysicsCleanup() {
 	
 }
 
+
 void GUI() {
 	{	//FrameRate
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		
+		ImGui::Combo("SOLVER", &EuVer, "Euler\0Verlet\0");
 		ImGui::DragFloat("Particles Life Time", &particlesLifeTime, 0.1f);
 		ImGui::DragInt("Particles Generation Rate", &particleGenerationRate, 1);
 		//TODO
@@ -237,5 +240,6 @@ void GUI() {
 	if (show_test_window) {
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
 		ImGui::ShowTestWindow(&show_test_window);
+
 	}
 }	 
