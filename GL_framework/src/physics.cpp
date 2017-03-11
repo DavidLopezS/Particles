@@ -33,6 +33,10 @@ namespace LilSpheres {
 	extern void drawParticles(int startIdx, int count);
 }
 
+int youngestPart, oldestPart;
+
+
+
 void setupPrims() {
 	Sphere::setupSphere();
 	Capsule::setupCapsule();
@@ -72,8 +76,16 @@ void renderPrims() {
 
 	//TODO drawParticles can only draw a contiguous amount of particles in its array from start idx to idx+count
 	//Depending the alive particles that have to be rendered, you may need to do multiple calls for this function
-	if (renderParticles)
-		LilSpheres::drawParticles(0, LilSpheres::maxParticles);
+	if (renderParticles) {
+		if (oldestPart <= youngestPart) {
+			LilSpheres::drawParticles(oldestPart, youngestPart + 1 - oldestPart);
+		}
+		else {
+			LilSpheres::drawParticles(0, youngestPart + 1);
+			LilSpheres::drawParticles(oldestPart, LilSpheres::maxParticles - oldestPart);
+		}
+	}
+
 	//
 }
 
@@ -83,55 +95,83 @@ struct Particle {
 	glm::vec3 prePos;
 	glm::vec3 speed;
 	glm::vec3 dir;
-	float lifeEx; // inizialitzar a un valor (ex. 1 segon).
+	float lifeTime;
 	Particle() {
 		dir.x = dir.y = dir.z = 1;
 	}
 };
 
-int firstPartPos = 0, lastPartPos = 0;
 float particlesLifeTime = 3.0f;
-int particleGenerationRate = 5;
+int particleGenerationRate = 50;
 float gravity = 9.8f;
-int EuVer = true; //canvia de Euler a Verlet--> false = Euler    true = Verlet.
-
+int isVerletMode = false; //canvia de Euler a Verlet--> false = Euler    true = Verlet.
+int numPart = 0; //numero total de particules en cada frame
 
 Particle *partArray;
 float *vertexArray;
 
-void generateNewParticle(bool mode) {
-	//calcular la generacio de particules, es a dir, la posicio x,y,z de la particula
-	//true es cascada, false es font
+void particleGenerator() {
+	for (int i = 0; i < particleGenerationRate; ++i) {
+		if (numPart < LilSpheres::maxParticles) {
+			youngestPart = (youngestPart + 1) % LilSpheres::maxParticles;
+#pragma region
+			//pos inicial
+			/*partArray[youngestPart].pos.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+			partArray[youngestPart].pos.y = ((float)rand() / RAND_MAX) * 10.f;
+			partArray[youngestPart].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;*/
 
-	//algoritme cascada
-	if (mode) {
+			partArray[youngestPart].pos.x = -2;
+			partArray[youngestPart].pos.y = 5;
+			partArray[youngestPart].pos.z = 0;
 
+			//vel inicial
+			partArray[youngestPart].speed.x = ((float)rand() / RAND_MAX) * 5 + 3;
+			partArray[youngestPart].speed.y = ((float)rand() / RAND_MAX) * 10 + 5;
+			partArray[youngestPart].speed.z = ((float)rand() / RAND_MAX) * 6.f - 3.f;
+
+			partArray[youngestPart].lifeTime = particlesLifeTime;
+#pragma endregion SPAWN POSITION
+			++numPart;
+		}
 	}
-	//algoritme de font desde un punt
-	if (!mode) {
 
-	}
+	////true es cascada, false es font
+
+	////algoritme cascada
+	//if (mode) {
+
+	//}
+	////algoritme de font desde un punt
+	//if (!mode) {
+
+	//}
 
 }
+void particleKiller() {
+	while (numPart > 0 && partArray[oldestPart].lifeTime <= 0) {
+		oldestPart = (oldestPart + 1) % LilSpheres::maxParticles;
+		--numPart;
+	}
+}
 
-void updateParticleArray() {
+void transformParticleArrayToFloatArray() {
 	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
 		vertexArray[i * 3 + 0] = partArray[i].pos[0];
 		vertexArray[i * 3 + 1] = partArray[i].pos[1];
 		vertexArray[i * 3 + 2] = partArray[i].pos[2];
 	}
-	LilSpheres::updateParticles(0, LilSpheres::maxParticles, vertexArray);
 }
 
 
 
-void moveParticle(int index, float time, bool mode) {
+void moveParticle(int index, float time) {
 //TO DO
+
 	//EULER SOLVER (elastic)
-	if (!mode) {//S'utilitza la variable global EuVer
+	if (!isVerletMode) {//S'utilitza la variable global EuVer
 		//actualitzar velocitat
 		partArray[index].speed.x = partArray[index].speed.x; //la mateixa, no hi ha fregament
-		partArray[index].speed.y = partArray[index].speed.y /** partArray[index].dir.y*/ - gravity*time; //te gravetat
+		partArray[index].speed.y = partArray[index].speed.y - gravity*time; //te gravetat
 		partArray[index].speed.z = partArray[index].speed.z; //la mateixa, no hi ha fregament
 		//actualitzar posicio
 		partArray[index].pos.x = partArray[index].pos.x + partArray[index].speed.x * time /** partArray[index].dir.x*/;
@@ -139,7 +179,7 @@ void moveParticle(int index, float time, bool mode) {
 		partArray[index].pos.z = partArray[index].pos.z + partArray[index].speed.z * time /** partArray[index].dir.z*/;
 	}
 	//VERLET SOLVER
-	if (mode) {//S'utilitza la variable global EuVer
+	if (isVerletMode) {//S'utilitza la variable global EuVer
 		
 		if (partArray[index].prePos.x == 0 && partArray[index].prePos.y == 0 && partArray[index].prePos.z == 0) {
 			partArray[index].prePos.x = partArray[index].pos.x;
@@ -191,32 +231,44 @@ void PhysicsInit() {
 
 	partArray = new Particle[LilSpheres::maxParticles];
 	vertexArray = new float[LilSpheres::maxParticles*3];
-	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		//pos
-		partArray[i].pos.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-		partArray[i].pos.y = ((float)rand() / RAND_MAX) * 10.f;
-		partArray[i].pos.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
 
-		//vel inicial
-		partArray[i].speed.x = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-		partArray[i].speed.y = ((float)rand() / RAND_MAX) * 10.f - 5.f;
-		partArray[i].speed.z = ((float)rand() / RAND_MAX) * 10.f - 5.f;
+	youngestPart = -1;
+	oldestPart = 0;
+	
 
-	}
 }
 
 
 void PhysicsUpdate(float dt){
-	
-	for (int i = 0; i < LilSpheres::maxParticles; ++i) {
-		//mirar si moren
-		//generar noves particules
+	particleKiller(); //mata les particules que pasen el temps de vida
+	particleGenerator(); //generar noves particules
+	if (numPart > 0) {
+		if (oldestPart <= youngestPart) {
+			for (int i = oldestPart; i <= youngestPart; ++i) {
+				moveParticle(i, dt);
+				//collision(i, dt); //recalcular nova posicio
+				//colisio amb esfera i capsula
 
-		moveParticle(i, dt, EuVer);
-		checkWallCollision(i, dt); //recalcular nova posicio
-		//colisio amb esfera i capsula
+				partArray[i].lifeTime -= dt; //actualitzem temps de vida
+			}
+			
+		}
+		else { //oldestPart > youngestPart
+			for (int j = 0; j <= youngestPart; ++j) {
+				moveParticle(j, dt);
+				//collision
+				partArray[j].lifeTime -= dt;
+			}
+			for (int k = oldestPart; k < LilSpheres::maxParticles; ++k) {
+				moveParticle(k, dt);
+				//collision
+				partArray[k].lifeTime -= dt;
+			}
+			
+		}
+		transformParticleArrayToFloatArray();
+		LilSpheres::updateParticles(0, LilSpheres::maxParticles, vertexArray);
 	}
-	updateParticleArray(); //al final de tot
 }
 void PhysicsCleanup() {
 	
@@ -230,9 +282,10 @@ void GUI() {
 	{	//FrameRate
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		
-		ImGui::Combo("SOLVER", &EuVer, "Euler\0Verlet\0");
+		ImGui::Combo("SOLVER", &isVerletMode, "Euler\0Verlet\0");
 		ImGui::DragFloat("Particles Life Time", &particlesLifeTime, 0.1f);
 		ImGui::DragInt("Particles Generation Rate", &particleGenerationRate, 1);
+		ImGui::DragFloat("Gravity", &gravity, 0.1f);
 		//TODO
 	}
 

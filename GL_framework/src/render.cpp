@@ -667,7 +667,7 @@ GLuint particlesVao;
 GLuint particlesVbo;
 float radius;
 int numparticles;
-extern const int maxParticles = 10000;//SHRT_MAX;
+extern const int maxParticles = SHRT_MAX;
 
 void setupParticles(int numTotalParticles, float radius) {
 	assert(numTotalParticles > 0);
@@ -700,7 +700,7 @@ void updateParticles(int startIdx, int count, float* array_data) {
 	float* buff = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 	buff = &buff[startIdx];
 	for(int i = 0; i < 3*count; ++i) {
-		buff[i] = array_data[i];
+		buff[i] = array_data[i+startIdx];
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
