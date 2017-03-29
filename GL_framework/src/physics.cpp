@@ -41,11 +41,8 @@ struct Particle {
 	glm::vec3 pos;
 	glm::vec3 prePos;
 	glm::vec3 speed;
-	glm::vec3 dir;
 	float lifeTime;
-	Particle() {
-		dir.x = dir.y = dir.z = 1;
-	}
+
 };
 
 //variables NO modificables al GUI
